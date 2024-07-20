@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GA4 test</title>
+    <!-- Redirect to tasks.html if custom_user_id is set in local storage -->
+    <script>
+        (function() {
+            var size = localStorage.getItem('businessSize');
+            if (size) {
+                window.location.href = 'tasks.html';
+            }
+        })();
+    </script>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K45J2CVG');</script>
+    <!-- End Google Tag Manager -->
+    <script src="script.js"></script>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K45J2CVG"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <h1>GA4 test</h1>
+    <div id="get-toolkit">
+        <h2>Get new toolkit</h2>
+        <form id="business-size-form">
+            <label for="business-size">Business size</label>
+            <select id="business-size">
+                <option value="" disabled selected>Select</option>
+                <option value="Just me">Just me</option>
+                <option value="2-10 people">2-10 people</option>
+                <option value="11-25 people">11-25 people</option>
+                <option value="More than 25 people">More than 25 people</option>
+            </select>
+            <button type="button" onclick="saveBusinessSize()">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
