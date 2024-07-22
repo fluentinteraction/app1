@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App 1 tasks</title>
-    <!-- Redirect to index.html if businessSize is not set in local storage -->
+    <title>App2 tasks</title>
+    <!-- Push login event to data layer -->
     <script>
         (function() {
-            var size = localStorage.getItem('businessSize');
-            if (!size) {
+            var code = localStorage.getItem('custom_user_id');
+            if (code) {
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'login',
+                    'custom_user_id': code
+                });
+            } else {
                 window.location.href = 'index.html';
             }
         })();
@@ -33,13 +39,17 @@
         }
     </style>
 </head>
-<body onload="loadTasks()">
+<body onload="loadCode()">
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K45J2CVG"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <h1>App1</h1>
+    <h1>App2 tasks</h1>
     <button onclick="clearData()">Clear Data and Restart</button>
+    <div id="toolkit-display">
+        <p>Code: <span id="generated-code"></span></p>
+    </div>
+
     <table id="tasks-table">
         <thead>
             <tr>

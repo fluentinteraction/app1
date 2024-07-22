@@ -1,76 +1,87 @@
-window.saveBusinessSize = function() {
-    const size = document.getElementById('business-size').value;
-    if (size) {
-        localStorage.setItem('businessSize', size);
-        localStorage.setItem('task1-status', 'Not complete');
-        localStorage.setItem('task2-status', 'Not complete');
-        localStorage.setItem('task3-status', 'Not complete');
-        window.location.href = 'tasks.html';
-    } else {
-        alert('Please select a business size.');
+// Generate a three-word code from words.js
+function generateCode() {
+    const wordsArray = [
+        "apple", "orange", "banana", "grape", "cherry", "pear", "peach", "plum", "kiwi", "mango",
+        // Add more words as needed
+    ];
+    const randomWord = () => wordsArray[Math.floor(Math.random() * wordsArray.length)];
+    return `${randomWord()}${randomWord()}${randomWord()}`;
+}
+
+// Save the generated code to local storage and Google Analytics
+function saveCodeToLocalStorage() {
+    const generatedCode = generateCode();
+    localStorage.setItem('custom_user_id', generatedCode);
+    console.log('Generated code:', generatedCode);
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        'event': 'login',
+        'custom_user_id': generatedCode
+    });
+    document.getElementById('generated-code').textContent = generatedCode;
+}
+
+// Load the code from local storage and display it
+function loadCode() {
+    const code = localStorage.getItem('custom_user_id');
+    if (code) {
+        document.getElementById('generated-code').textContent = code;
     }
 }
 
-window.loadTasks = function() {
-    const size = localStorage.getItem('businessSize');
-    if (size) {
-        loadRecordData();
-    } else {
-        window.location.href = 'index.html';
-    }
-}
-
-window.clearData = function() {
+// Clear local storage and redirect to the index page
+function clearData() {
     localStorage.clear();
     window.location.href = 'index.html';
 }
 
-function loadRecordData() {
-    document.getElementById('task1-status').textContent = localStorage.getItem('task1-status');
-    document.getElementById('task2-status').textContent = localStorage.getItem('task2-status');
-    document.getElementById('task3-status').textContent = localStorage.getItem('task3-status');
-    updateDropdowns();
-    updateStatusColor('task1');
-    updateStatusColor('task2');
-    updateStatusColor('task3');
-}
-
-window.updateStatus = function(taskId) {
-    const dropdown = document.getElementById(`${taskId}-update`);
-    const status = dropdown.value;
-    if (status) {
-        document.getElementById(`${taskId}-status`).textContent = status;
-        updateStatusColor(taskId);
-        localStorage.setItem(`${taskId}-status`, status);
-    } else {
-        alert('Please select a status.');
-    }
-}
-
-function updateDropdowns() {
-    const tasks = ['task1', 'task2', 'task3'];
-    tasks.forEach(task => {
-        const status = document.getElementById(`${task}-status`).textContent;
-        const dropdown = document.getElementById(`${task}-update`);
-        dropdown.innerHTML = '<option disabled selected>Select...</option>';
-        if (status === 'Not complete') {
-            dropdown.innerHTML += '<option value="Complete">Complete</option><option value="Skipped">Skipped</option>';
-        } else if (status === 'Complete') {
-            dropdown.innerHTML += '<option value="Not complete">Not complete</option><option value="Skipped">Skipped</option>';
-        } else if (status === 'Skipped') {
-            dropdown.innerHTML += '<option value="Not complete">Not complete</option><option value="Complete">Complete</option>';
-        }
-    });
-}
-
-function updateStatusColor(taskId) {
+// Update the status of a task and push the data to the data layer
+function updateStatus(taskId) {
     const statusElement = document.getElementById(`${taskId}-status`);
-    const status = statusElement.textContent;
-    if (status === 'Not complete') {
-        statusElement.className = 'not-complete';
-    } else if (status === 'Complete') {
-        statusElement.className = 'complete';
-    } else if (status === 'Skipped') {
-        statusElement.className = 'skipped';
+    const updateElement = document.getElementById(`${taskId}-update`);
+    const newStatus = updateElement.value;
+    statusElement.textContent = newStatus;
+    
+    // Update the class based on the new status
+    statusElement.className = '';
+    if (newStatus === 'Not complete') {
+        statusElement.classList.add('not-complete');
+    } else if (newStatus === 'Complete') {
+        statusElement.classList.add('complete');
+    } else if (newStatus === 'Skipped') {
+        statusElement.classList.add('skipped');
+    }
+
+    // Push the update event to the data layer
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        'event': 'status_updated',
+        'task_name': taskId,
+        'status': newStatus,
+        'custom_user_id': localStorage.getItem('custom_user_id')
+    });
+    console.log(`Updated ${taskId} to ${newStatus}`);
+}
+
+// Populate the update dropdowns with available status options
+function populateUpdateDropdowns() {
+    const statuses = ['Not complete', 'Complete', 'Skipped'];
+    for (let i = 1; i <= 3; i++) {
+        const updateElement = document.getElementById(`task${i}-update`);
+        statuses.forEach(status => {
+            const option = document.createElement('option');
+            option.value = status;
+            option.textContent = status;
+            updateElement.appendChild(option);
+        });
     }
 }
+
+// Initialize the task list page
+function initTaskList() {
+    loadCode();
+    populateUpdateDropdowns();
+}
+
+// Run the init function when the page loads
+document.addEventListener('DOMContentLoaded', initTaskList);
