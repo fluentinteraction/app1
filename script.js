@@ -94,4 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Run the init function when the page loads
     initTaskList();
+
+    // Expose functions to global scope
+    window.saveCodeToLocalStorage = saveCodeToLocalStorage;
+    window.clearData = clearData;
+    window.updateStatus = updateStatus;
 });

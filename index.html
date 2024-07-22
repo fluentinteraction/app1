@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App1 index</title>
-    <!-- Redirect to tasks.html if custom_user_id is set in local storage -->
+    <title>App2 Index</title>
     <script>
+        // Check if custom_user_id exists in local storage and redirect to tasks if it does
         (function() {
-            var size = localStorage.getItem('businessSize');
-            if (size) {
+            if (localStorage.getItem('custom_user_id')) {
                 window.location.href = 'tasks.html';
             }
         })();
@@ -27,20 +26,18 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K45J2CVG"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <h1>App1</h1>
-    <div id="get-toolkit">
-        <h2>Get new toolkit</h2>
-        <form id="business-size-form">
-            <label for="business-size">Business size</label>
-            <select id="business-size">
-                <option value="" disabled selected>Select</option>
-                <option value="Just me">Just me</option>
-                <option value="2-10 people">2-10 people</option>
-                <option value="11-25 people">11-25 people</option>
-                <option value="More than 25 people">More than 25 people</option>
-            </select>
-            <button type="button" onclick="saveBusinessSize()">Submit</button>
-        </form>
+    <h1>GA4 test</h1>
+    <h2>Get new toolkit</h2>
+    <div>
+        <label for="business-size">Business size</label>
+        <select id="business-size">
+            <option disabled selected>Select...</option>
+            <option>Just me</option>
+            <option>2-10 people</option>
+            <option>11-25 people</option>
+            <option>More than 25 people</option>
+        </select>
+        <button onclick="saveCodeToLocalStorage()">Submit</button>
     </div>
 </body>
 </html>
