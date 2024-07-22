@@ -60,6 +60,12 @@ function updateStatus(taskId) {
         'status': newStatus,
         'custom_user_id': localStorage.getItem('custom_user_id')
     });
+    console.log('Data Layer Push:', {
+        'event': 'status_updated',
+        'task_name': taskId,
+        'status': newStatus,
+        'custom_user_id': localStorage.getItem('custom_user_id')
+    });
     console.log(`Updated ${taskId} to ${newStatus}`);
 }
 
