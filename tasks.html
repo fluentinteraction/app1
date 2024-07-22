@@ -3,93 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App2 tasks</title>
-    <!-- Push login event to data layer -->
-    <script>
-        (function() {
-            var code = localStorage.getItem('custom_user_id');
-            if (code) {
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({
-                    'event': 'login',
-                    'custom_user_id': code
-                });
-            } else {
-                window.location.href = 'index.html';
-            }
-        })();
-    </script>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-K45J2CVG');</script>
-    <!-- End Google Tag Manager -->
+    <title>GA4 test</title>
     <script src="script.js"></script>
-    <style>
-        .not-complete {
-            color: orange;
-        }
-        .complete {
-            color: green;
-        }
-        .skipped {
-            color: grey;
-        }
-    </style>
 </head>
-<body>
+<body onload="initTaskList()">
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K45J2CVG"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-    <h1>App2 tasks</h1>
-    <button onclick="clearData()">Clear Data and Restart</button>
-    <div id="toolkit-display">
-        <p>Code: <span id="generated-code"></span></p>
+    <h1>GA4 test</h1>
+    <div>
+        Code: <span id="user-code"></span>
     </div>
-
-    <table id="tasks-table">
-        <thead>
-            <tr>
-                <th>Task</th>
-                <th>Status</th>
-                <th>Update status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Task 1</td>
-                <td id="task1-status" class="not-complete">Not complete</td>
-                <td>
-                    <select id="task1-update">
-                        <option disabled selected>Select...</option>
-                    </select>
-                    <button onclick="updateStatus('task1')">Update status</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Task 2</td>
-                <td id="task2-status" class="not-complete">Not complete</td>
-                <td>
-                    <select id="task2-update">
-                        <option disabled selected>Select...</option>
-                    </select>
-                    <button onclick="updateStatus('task2')">Update status</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Task 3</td>
-                <td id="task3-status" class="not-complete">Not complete</td>
-                <td>
-                    <select id="task3-update">
-                        <option disabled selected>Select...</option>
-                    </select>
-                    <button onclick="updateStatus('task3')">Update status</button>
-                </td>
-            </tr>
-        </tbody>
+    <button onclick="clearLocalStorage()">Clear Data and Restart</button>
+    <table>
+        <tr>
+            <th>Task</th>
+            <th>Status</th>
+            <th>Update status</th>
+        </tr>
+        <tr>
+            <td>Task 1</td>
+            <td id="task1-status">Not complete</td>
+            <td>
+                <select id="task1-update"></select>
+                <button onclick="updateStatus(1)">Update status</button>
+            </td>
+        </tr>
+        <tr>
+            <td>Task 2</td>
+            <td id="task2-status">Not complete</td>
+            <td>
+                <select id="task2-update"></select>
+                <button onclick="updateStatus(2)">Update status</button>
+            </td>
+        </tr>
+        <tr>
+            <td>Task 3</td>
+            <td id="task3-status">Not complete</td>
+            <td>
+                <select id="task3-update"></select>
+                <button onclick="updateStatus(3)">Update status</button>
+            </td>
+        </tr>
     </table>
 </body>
 </html>

@@ -1,102 +1,86 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Generate a three-word code from words.js
-    function generateCode() {
-        const wordsArray = [
-            "apple", "orange", "banana", "grape", "cherry", "pear", "peach", "plum", "kiwi", "mango",
-            // Add more words as needed
-        ];
-        const randomWord = () => wordsArray[Math.floor(Math.random() * wordsArray.length)];
-        return `${randomWord()}${randomWord()}${randomWord()}`;
+// Function to generate a three-word code
+function generateCode() {
+    const wordsArray = ["word1", "word2", "word3", "word4", "word5", /* Add all your words here */];
+    let code = '';
+    for (let i = 0; i < 3; i++) {
+        const randomIndex = Math.floor(Math.random() * wordsArray.length);
+        code += wordsArray[randomIndex];
     }
+    return code;
+}
 
-    // Save the generated code to local storage and Google Analytics
-    function saveCodeToLocalStorage() {
-        const generatedCode = generateCode();
-        localStorage.setItem('custom_user_id', generatedCode);
-        console.log('Generated code:', generatedCode);
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
+// Function to save code to local storage and redirect
+function saveCodeToLocalStorage() {
+    const businessSize = document.getElementById('business-size').value;
+    if (businessSize !== 'Select...') {
+        const code = generateCode();
+        localStorage.setItem('custom_user_id', code);
+        localStorage.setItem('business_size', businessSize);
+
+        // Push to dataLayer for GA
+        dataLayer.push({
             'event': 'login',
-            'custom_user_id': generatedCode
+            'custom_user_id': code
         });
-        document.getElementById('generated-code').textContent = generatedCode;
-    }
 
-    // Load the code from local storage and display it
-    function loadCode() {
-        const code = localStorage.getItem('custom_user_id');
-        if (code) {
-            document.getElementById('generated-code').textContent = code;
-        }
+        window.location.href = 'tasks.html';
+    } else {
+        alert('Please select a business size.');
     }
+}
 
-    // Clear local storage and redirect to the index page
-    function clearData() {
-        localStorage.clear();
+// Function to clear local storage and redirect to index
+function clearLocalStorage() {
+    localStorage.removeItem('custom_user_id');
+    localStorage.removeItem('business_size');
+    window.location.href = 'index.html';
+}
+
+// Function to initialize task list
+function initTaskList() {
+    const code = localStorage.getItem('custom_user_id');
+    if (!code) {
         window.location.href = 'index.html';
+        return;
     }
 
-    // Update the status of a task and push the data to the data layer
-    function updateStatus(taskId) {
-        const statusElement = document.getElementById(`${taskId}-status`);
-        const updateElement = document.getElementById(`${taskId}-update`);
-        const newStatus = updateElement.value;
-        statusElement.textContent = newStatus;
-        
-        // Update the class based on the new status
-        statusElement.className = '';
-        if (newStatus === 'Not complete') {
-            statusElement.classList.add('not-complete');
-        } else if (newStatus === 'Complete') {
-            statusElement.classList.add('complete');
-        } else if (newStatus === 'Skipped') {
-            statusElement.classList.add('skipped');
+    document.getElementById('user-code').textContent = code;
+    // Initialize tasks from local storage or set default values
+    for (let i = 1; i <= 3; i++) {
+        const taskStatus = localStorage.getItem(`task${i}`) || 'Not complete';
+        document.getElementById(`task${i}-status`).textContent = taskStatus;
+        setStatusDropdown(i, taskStatus);
+    }
+}
+
+// Function to set status dropdown
+function setStatusDropdown(taskNumber, currentStatus) {
+    const dropdown = document.getElementById(`task${taskNumber}-update`);
+    dropdown.innerHTML = '';
+    const statuses = ['Not complete', 'Complete', 'Skipped'];
+    statuses.forEach(status => {
+        if (status !== currentStatus) {
+            const option = document.createElement('option');
+            option.value = status;
+            option.textContent = status;
+            dropdown.appendChild(option);
         }
+    });
+}
 
-        // Push the update event to the data layer
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
+// Function to update task status
+function updateStatus(taskNumber) {
+    const dropdown = document.getElementById(`task${taskNumber}-update`);
+    const newStatus = dropdown.value;
+    if (newStatus !== 'Select...') {
+        document.getElementById(`task${taskNumber}-status`).textContent = newStatus;
+        localStorage.setItem(`task${taskNumber}`, newStatus);
+
+        // Push to dataLayer for GA
+        dataLayer.push({
             'event': 'status_updated',
-            'task_name': taskId,
-            'status': newStatus,
-            'custom_user_id': localStorage.getItem('custom_user_id')
+            'task_id': `task${taskNumber}`,
+            'status': newStatus
         });
-        console.log('Data Layer Push:', {
-            'event': 'status_updated',
-            'task_name': taskId,
-            'status': newStatus,
-            'custom_user_id': localStorage.getItem('custom_user_id')
-        });
-        console.log(`Updated ${taskId} to ${newStatus}`);
     }
-
-    // Populate the update dropdowns with available status options
-    function populateUpdateDropdowns() {
-        const statuses = ['Not complete', 'Complete', 'Skipped'];
-        for (let i = 1; i <= 3; i++) {
-            const updateElement = document.getElementById(`task${i}-update`);
-            if (updateElement) {
-                statuses.forEach(status => {
-                    const option = document.createElement('option');
-                    option.value = status;
-                    option.textContent = status;
-                    updateElement.appendChild(option);
-                });
-            }
-        }
-    }
-
-    // Initialize the task list page
-    function initTaskList() {
-        loadCode();
-        populateUpdateDropdowns();
-    }
-
-    // Run the init function when the page loads
-    initTaskList();
-
-    // Expose functions to global scope
-    window.saveCodeToLocalStorage = saveCodeToLocalStorage;
-    window.clearData = clearData;
-    window.updateStatus = updateStatus;
-});
+}
