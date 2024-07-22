@@ -1,26 +1,16 @@
-// Function to generate a three-word code
-function generateCode() {
-    const wordsArray = ["word1", "word2", "word3", "word4", "word5", /* Add all your words here */];
-    let code = '';
-    for (let i = 0; i < 3; i++) {
-        const randomIndex = Math.floor(Math.random() * wordsArray.length);
-        code += wordsArray[randomIndex];
-    }
-    return code;
-}
+// Ensure dataLayer is defined
+window.dataLayer = window.dataLayer || [];
 
-// Function to save code to local storage and redirect
-function saveCodeToLocalStorage() {
+// Function to save business size to local storage and redirect
+function saveBusinessSize() {
     const businessSize = document.getElementById('business-size').value;
     if (businessSize !== 'Select...') {
-        const code = generateCode();
-        localStorage.setItem('custom_user_id', code);
         localStorage.setItem('business_size', businessSize);
 
         // Push to dataLayer for GA
         dataLayer.push({
             'event': 'login',
-            'custom_user_id': code
+            'business_size': businessSize
         });
 
         window.location.href = 'tasks.html';
@@ -31,20 +21,22 @@ function saveCodeToLocalStorage() {
 
 // Function to clear local storage and redirect to index
 function clearLocalStorage() {
-    localStorage.removeItem('custom_user_id');
     localStorage.removeItem('business_size');
+    for (let i = 1; i <= 3; i++) {
+        localStorage.removeItem(`task${i}`);
+    }
     window.location.href = 'index.html';
 }
 
 // Function to initialize task list
 function initTaskList() {
-    const code = localStorage.getItem('custom_user_id');
-    if (!code) {
+    const businessSize = localStorage.getItem('business_size');
+    if (!businessSize) {
         window.location.href = 'index.html';
         return;
     }
 
-    document.getElementById('user-code').textContent = code;
+    document.getElementById('business-size-display').textContent = businessSize;
     // Initialize tasks from local storage or set default values
     for (let i = 1; i <= 3; i++) {
         const taskStatus = localStorage.getItem(`task${i}`) || 'Not complete';
