@@ -15,6 +15,7 @@ window.loadTasks = function() {
     const size = localStorage.getItem('businessSize');
     if (size) {
         loadRecordData();
+        initializeDropdowns();
     } else {
         window.location.href = 'index.html';
     }
@@ -29,57 +30,41 @@ function loadRecordData() {
     document.getElementById('task1-status').textContent = localStorage.getItem('task1-status');
     document.getElementById('task2-status').textContent = localStorage.getItem('task2-status');
     document.getElementById('task3-status').textContent = localStorage.getItem('task3-status');
-    updateDropdowns();
-    updateStatusColor('task1');
-    updateStatusColor('task2');
-    updateStatusColor('task3');
 }
 
-window.updateStatus = function(taskId) {
-    const dropdown = document.getElementById(`${taskId}-update`);
-    const status = dropdown.value;
-    if (status) {
-        const taskName = taskId.replace('-', ' '); // Assuming taskId is in format task1, task2, etc.
-        document.getElementById(`${taskId}-status`).textContent = status;
-        updateStatusColor(taskId);
-        localStorage.setItem(`${taskId}-status`, status);
-        
-        // Fire GTM event
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-            event: 'status_update',
-            task_name: taskName,
-            status: status
-        });
-    } else {
-        alert('Please select a status.');
+function initializeDropdowns() {
+    initializeDropdown('task1');
+    initializeDropdown('task2');
+    initializeDropdown('task3');
+}
+
+function initializeDropdown(taskId) {
+    const statusElement = document.getElementById(`${taskId}-status`);
+    const updateElement = document.getElementById(`${taskId}-update`);
+
+    updateDropdownOptions(statusElement.innerText, updateElement);
+}
+
+function updateDropdownOptions(currentStatus, dropdown) {
+    dropdown.innerHTML = '<option disabled selected>Select...</option>';
+    if (currentStatus === 'Not complete') {
+        dropdown.innerHTML += '<option>Complete</option><option>Skipped</option>';
+    } else if (currentStatus === 'Complete') {
+        dropdown.innerHTML += '<option>Not complete</option><option>Skipped</option>';
+    } else if (currentStatus === 'Skipped') {
+        dropdown.innerHTML += '<option>Not complete</option><option>Complete</option>';
     }
 }
 
-function updateDropdowns() {
-    const tasks = ['task1', 'task2', 'task3'];
-    tasks.forEach(task => {
-        const status = document.getElementById(`${task}-status`).textContent;
-        const dropdown = document.getElementById(`${task}-update`);
-        dropdown.innerHTML = '<option disabled selected>Select...</option>';
-        if (status === 'Not complete') {
-            dropdown.innerHTML += '<option value="Complete">Complete</option><option value="Skipped">Skipped</option>';
-        } else if (status === 'Complete') {
-            dropdown.innerHTML += '<option value="Not complete">Not complete</option><option value="Skipped">Skipped</option>';
-        } else if (status === 'Skipped') {
-            dropdown.innerHTML += '<option value="Not complete">Not complete</option><option value="Complete">Complete</option>';
-        }
-    });
-}
-
-function updateStatusColor(taskId) {
+window.updateStatus = function(taskId) {
     const statusElement = document.getElementById(`${taskId}-status`);
-    const status = statusElement.textContent;
-    if (status === 'Not complete') {
-        statusElement.className = 'not-complete';
-    } else if (status === 'Complete') {
-        statusElement.className = 'complete';
-    } else if (status === 'Skipped') {
-        statusElement.className = 'skipped';
+    const updateElement = document.getElementById(`${taskId}-update`);
+    const selectedOption = updateElement.value;
+
+    if (selectedOption && selectedOption !== 'Select...') {
+        statusElement.innerText = selectedOption;
+        statusElement.className = selectedOption.toLowerCase().replace(' ', '-');
+        localStorage.setItem(`${taskId}-status`, selectedOption); // Save the new status to localStorage
+        initializeDropdown(taskId);  // Update dropdown options based on new status
     }
 }
